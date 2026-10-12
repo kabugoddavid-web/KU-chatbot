@@ -9,8 +9,8 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// 1. SERVE STATIC FRONTEND FILES (HTML, CSS, JS, Images from project root or public folder)
-app.use(express.static(path.join(__dirname)));
+// Serve all static assets from the root directory
+app.use(express.static(__dirname));
 
 const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY;
 const GOOGLE_CSE_ID = process.env.GOOGLE_CSE_ID;
@@ -147,13 +147,8 @@ function selectRelevantPhotos(query) {
   ];
 }
 
-// 2. EXPLICIT HOME ROUTE TO SERVE index.html
+// Explicit Root Route for index.html
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'));
-});
-
-// 3. FALLBACK ROUTE FOR SPA/FRONTEND ROUTING
-app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
