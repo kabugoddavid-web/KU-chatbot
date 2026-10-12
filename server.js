@@ -3,10 +3,14 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const axios = require('axios');
+const path = require('path');
 
 const app = express();
 app.use(cors());
 app.use(express.json());
+
+// 1. SERVE STATIC FRONTEND FILES (HTML, CSS, JS, Images from project root or public folder)
+app.use(express.static(path.join(__dirname)));
 
 const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY;
 const GOOGLE_CSE_ID = process.env.GOOGLE_CSE_ID;
@@ -110,7 +114,6 @@ function parseGroundedResponse(data) {
   return { reply, sources };
 }
 
-// Fetch live results using the Custom Search JSON API for existing API customers.
 async function fetchGoogleSearchResults(query) {
   const response = await axios.get('https://www.googleapis.com/customsearch/v1', {
     params: {
@@ -137,13 +140,22 @@ function createSearchSummary(searchResults) {
     .join('\n\n');
 }
 
-// Photo Aggregator Function
 function selectRelevantPhotos(query) {
   return [
     { url: "https://images.unsplash.com/photo-1562774053-701939374585?auto=format&fit=crop&w=600&q=80", caption: "Kampala University Environment" },
     { url: "https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=600&q=80", caption: "Students in Computer Science Laboratory" }
   ];
 }
+
+// 2. EXPLICIT HOME ROUTE TO SERVE index.html
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+// 3. FALLBACK ROUTE FOR SPA/FRONTEND ROUTING
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'index.html'));
+});
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
