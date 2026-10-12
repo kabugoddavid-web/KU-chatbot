@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kampala University AI Interactive System</title>
+  <style>
+    :root {
+      --ku-blue: #003366;
+      --ku-gold: #f4c430;
+      --bg-gray: #f4f7f9;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-gray);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* ENHANCED & CENTERED HEADER */
+    header {
+      background-color: var(--ku-blue);
+      color: white;
+      padding: 20px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-bottom: 4px solid var(--ku-gold);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      text-align: center;
+    }
+
+    /* LARGER LOGO */
+    .brand img {
+      width: 80px; /* Increased from 58px */
+      height: 80px; /* Increased from 58px */
+      background: white;
+      border-radius: 50%;
+      padding: 4px;
+      object-fit: contain;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.25);
+    }
+
+    .brand h1 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+
+    .brand p {
+      font-size: 0.95rem;
+      color: var(--ku-gold);
+      margin-top: 2px;
+    }
+
+    .main-layout {
+      flex: 1;
+      display: flex;
+      max-width: 1300px;
+      width: 100%;
+      margin: 12px auto;
+      gap: 15px;
+      padding: 0 12px;
+      height: calc(100vh - 165px); /* Adjusted for larger header */
+    }
+
+    /* Left Scrolling Gallery */
+    .sidebar {
+      width: 280px;
+      background: white;
+      border-radius: 10px;
+      border: 1px solid #e0e0e0;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .sidebar-header {
+      background: var(--ku-blue);
+      color: white;
+      padding: 10px;
+      font-size: 0.85rem;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    .scroll-wrapper {
+      flex: 1;
+      overflow: hidden;
+      padding: 10px;
+    }
+
+    .scroll-track {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      animation: autoScroll 25s linear infinite;
+    }
+
+    .scroll-track:hover {
+      animation-play-state: paused;
+    }
+
+    .card {
+      background: #fafafa;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .card img {
+      width: 100%;
+      height: 130px;
+      object-fit: cover;
+    }
+
+    .card p {
+      padding: 6px;
+      font-size: 0.75rem;
+      text-align: center;
+      color: #333;
+    }
+
+    @keyframes autoScroll {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(-50%); }
+    }
+
+    /* Right Chatbot Area with Watermark */
+    .chat-area {
+      flex: 1;
+      background: white;
+      border-radius: 10px;
+      border: 1px solid #e0e0e0;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* LARGER WATERMARK OVERLAY */
+    .chat-area::before {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 380px; /* Increased from 280px */
+      height: 380px; /* Increased from 280px */
+      background-image: url('logo.jpg'), url('logo.png');
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: contain;
+      opacity: 0.08;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .chat-messages {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .msg {
+      max-width: 80%;
+      padding: 12px 16px;
+      border-radius: 16px;
+      font-size: 0.92rem;
+      line-height: 1.5;
+    }
+
+    .bot-msg {
+      background: rgba(240, 244, 248, 0.92);
+      color: #222;
+      align-self: flex-start;
+      border-left: 4px solid var(--ku-blue);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+
+    .user-msg {
+      background: var(--ku-blue);
+      color: white;
+      align-self: flex-end;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .lang-badge {
+      display: inline-block;
+      background: var(--ku-gold);
+      color: var(--ku-blue);
+      font-weight: bold;
+      font-size: 0.72rem;
+      padding: 2px 8px;
+      border-radius: 10px;
+      margin-bottom: 6px;
+    }
+
+    .translation-note {
+      font-size: 0.78rem;
+      color: #555;
+      font-style: italic;
+      margin-top: 4px;
+      border-left: 2px solid var(--ku-gold);
+      padding-left: 6px;
+    }
+
+    .sources-list {
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px solid #ccc;
+      font-size: 0.78rem;
+    }
+
+    .sources-list a {
+      color: var(--ku-blue);
+      text-decoration: underline;
+    }
+
+    .input-box {
+      display: flex;
+      padding: 12px;
+      border-top: 1px solid #eee;
+      gap: 10px;
+      background: white;
+      position: relative;
+      z-index: 1;
+    }
+
+    .input-box input {
+      flex: 1;
+      padding: 12px 16px;
+      border: 1px solid #ccc;
+      border-radius: 20px;
+      outline: none;
+    }
+
+    .input-box button {
+      background: var(--ku-blue);
+      color: white;
+      border: none;
+      padding: 0 20px;
+      border-radius: 20px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    footer {
+      background: var(--ku-blue);
+      color: white;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    .marquee-tag {
+      background: var(--ku-gold);
+      color: var(--ku-blue);
+      padding: 0 12px;
+      font-weight: bold;
+      font-size: 0.8rem;
+      height: 100%;
+      display: flex;
+      align-items: center;
+    }
+
+    .marquee-content {
+      display: inline-block;
+      white-space: nowrap;
+      padding-left: 100%;
+      animation: ticker 25s linear infinite;
+      font-size: 0.85rem;
+    }
+
+    @keyframes ticker {
+      0% { transform: translate(0, 0); }
+      100% { transform: translate(-100%, 0); }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="brand">
+      <img src="logo.jpg" alt="KU Logo" onerror="this.onerror=null; this.src='logo.png';">
+      <div>
+        <h1>Kampala University Live AI System</h1>
+        <p>Connected to Live Web Servers & AI Search</p>
+      </div>
+    </div>
+  </header>
+
+  <div class="main-layout">
+    <!-- Left Sidebar Photo Stream -->
+    <div class="sidebar">
+      <div class="sidebar-header">Campus Photos</div>
+      <div class="scroll-wrapper">
+        <div class="scroll-track" id="photoStream"></div>
+      </div>
+    </div>
+
+    <!-- Right AI Interface -->
+    <div class="chat-area">
+      <div class="chat-messages" id="chatBox">
+        <div class="msg bot-msg">
+          Hello! 👋 I am connected to live web search servers and multilingual reasoning modules. Ask me anything about Kampala University, admissions, courses, or news in <b>English, Luganda, Swahili, French</b>, or any other language!
+        </div>
+      </div>
+      <div class="input-box">
+        <input type="text" id="userInput" placeholder="Ask a question in any language (e.g. English, Luganda, Swahili)..." onkeypress="handleKey(event)">
+        <button onclick="sendQuery()">Ask AI</button>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="marquee-tag">LIVE TICKER</div>
+    <div class="marquee-content">
+      📢 Kampala University Admissions open across all campuses: Ggaba, Luweero, Jinja, Masaka, and Mutundwe. Visit ku.ac.ug for details. KAMPALA UNIVERSITY WELCOMES ALL STUDENTS FOR FRESHER'S BALL PARTY THIS FRIDAY  
+    </div>
+  </footer>
+
+  <script>
+    const images = [
+      { url: "image1.jpg", title: "Main Campus" },
+      { url: "image2.jpg", title: "Besides sports is education research" },
+      { url: "image3.jpg", title: "David Kabugo is a prominent Ugandan national woodball player who represents Kampala University (KU) on the local circuit and features internationally for the Woodball Cranes (Uganda’s national woodball team)." },
+      { url: "image4.jpg", title: "Innovation in ICT and those are the programmers" },
+      { url: "image5.jpg", title: "Mutundwe Campus" },
+      { url: "image6.jpg", title: "Lydia Jazmine's visit at Campus" },
+      { url: "image7.jpg", title: "Kampala University recently welcomed new students for the August 2026 intake with a comprehensive orientation program running across all its five campuses. And the university is preparing a Freshers Ball party which will be held at the Main Campus." }
+    ];
+
+    window.onload = function() {
+      const stream = document.getElementById("photoStream");
+      const list = [...images, ...images];
+      stream.innerHTML = list.map(img => `
+        <div class="card">
+          <img src="${img.url}" alt="${img.title}">
+          <p>${img.title}</p>
+        </div>
+      `).join("");
+    };
+
+    // Client-side AI Language Detection and Translation Engine
+    async function translateText(text, sourceLang, targetLang) {
+      if (sourceLang === targetLang) return text;
+      try {
+        const res = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=${sourceLang}&tl=${targetLang}&dt=t&q=${encodeURIComponent(text)}`);
+        const data = await res.json();
+        return data[0].map(item => item[0]).join("");
+      } catch (e) {
+        console.warn("Translation fallback:", e);
+        return text;
+      }
+    }
+
+    async function detectLanguage(text) {
+      try {
+        const res = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=en&dt=t&q=${encodeURIComponent(text)}`);
+        const data = await res.json();
+        return {
+          langCode: data[2] || "en",
+          englishTranslation: data[0].map(item => item[0]).join("")
+        };
+      } catch (e) {
+        return { langCode: "en", englishTranslation: text };
+      }
+    }
+
+    async function sendQuery() {
+      const input = document.getElementById("userInput");
+      const query = input.value.trim();
+      if (!query) return;
+
+      appendMsg(query, "user-msg");
+      input.value = "";
+
+      const loadingId = appendMsg("<i>Analyzing question, reasoning language, and searching servers...</i>", "bot-msg");
+
+      try {
+        // Step 1: AI Language Reasoning (Detect and translate to English for searching)
+        const langAnalysis = await detectLanguage(query);
+        const userLang = langAnalysis.langCode;
+        const englishQuery = langAnalysis.englishTranslation;
+
+        // Step 2: Query Backend Server with English context
+        const response = await fetch("http://localhost:3000/api/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message: englishQuery })
+        });
+
+        const data = await response.json();
+        if (!response.ok) {
+          throw new Error(data.error || "The search request failed.");
+        }
+
+        let rawReply = data.reply;
+
+        // Step 3: Translate AI response back into User's Native Language if non-English
+        let finalReply = rawReply;
+        if (userLang !== "en") {
+          finalReply = await translateText(rawReply, "en", userLang);
+        }
+
+        let formattedOutput = "";
+        if (userLang !== "en") {
+          formattedOutput += `<span class="lang-badge">Detected Language: ${escapeHtml(userLang.toUpperCase())}</span><br>`;
+          formattedOutput += `<div class="translation-note"><b>Translated Query:</b> "${escapeHtml(englishQuery)}"</div><br>`;
+        }
+
+        formattedOutput += escapeHtml(finalReply).replace(/\n/g, "<br>");
+
+        if (data.sources && data.sources.length > 0) {
+          formattedOutput += `<div class="sources-list"><b>Sources fetched:</b><br>`;
+          data.sources.forEach(s => {
+            const link = safeHttpUrl(s.link);
+            if (link) {
+              formattedOutput += `• <a href="${escapeHtml(link)}" target="_blank" rel="noopener noreferrer">${escapeHtml(s.title)}</a><br>`;
+            }
+          });
+          formattedOutput += `</div>`;
+        }
+
+        document.getElementById(loadingId)?.remove();
+        appendMsg(formattedOutput, "bot-msg");
+
+      } catch (err) {
+        document.getElementById(loadingId)?.remove();
+        appendMsg(`Unable to get an answer: ${escapeHtml(err.message)}`, "bot-msg");
+      }
+    }
+
+    function escapeHtml(value) {
+      return String(value).replace(/[&<>"']/g, character => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+      })[character]);
+    }
+
+    function safeHttpUrl(value) {
+      try {
+        const url = new URL(value);
+        return url.protocol === "http:" || url.protocol === "https:" ? url.href : "";
+      } catch {
+        return "";
+      }
+    }
+
+    function appendMsg(text, className) {
+      const box = document.getElementById("chatBox");
+      const id = "msg-" + Date.now();
+      const div = document.createElement("div");
+      div.id = id;
+      div.className = `msg ${className}`;
+      div.innerHTML = className === "user-msg" ? escapeHtml(text) : text;
+      box.appendChild(div);
+      box.scrollTop = box.scrollHeight;
+      return id;
+    }
+
+    function handleKey(e) {
+      if (e.key === "Enter") sendQuery();
+    }
+  </script>
+</body>
+</html>
